@@ -111,17 +111,23 @@ public class LockedMe {
     }
 
     private static void addFile() {
-        System.out.print("Enter file name to add: ");
-        String fileName = SCANNER.nextLine();
+    	System.out.print("Enter the complete file name to add (e.g., myfile.txt, script.py, Main.java): ");
+        String fileName = SCANNER.nextLine().trim();
+        
+        if (fileName.isEmpty() || !fileName.contains(".")) {
+            System.out.println("Invalid file name. Ensure you provide a file name with a valid extension (e.g., file.txt, script.py).");
+            return;
+        }
+
         File file = new File(ROOT_DIR, fileName);
         try {
             if (file.createNewFile()) {
-                System.out.println("File created successfully.");
+                System.out.println("File '" + fileName + "' created successfully.");
             } else {
-                System.out.println("File already exists.");
+                System.out.println("File '" + fileName + "' already exists.");
             }
         } catch (IOException e) {
-            System.out.println("Error creating file: " + e.getMessage());
+            System.out.println("Error creating file '" + fileName + "': " + e.getMessage());
         }
     }
 
