@@ -45,7 +45,7 @@ public class LockedMe {
     private static void showWelcomeScreen() {
         System.out.println("*********************************");
         System.out.println("Welcome to LockedMe.com");
-        System.out.println("Developer: Student");
+        System.out.println("Developer: Yogita Kumari");
         System.out.println("*********************************");
     }
 
