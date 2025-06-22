@@ -53,8 +53,3 @@
     |4 Back      |
 ```
 
-## GitHub Repository
-Source code is version controlled using Git. The repository link can be updated here when published.
-
-## Conclusion / USP
-This prototype demonstrates a simple command line file manager using core Java concepts. The modular code and sprint based approach make it easy to enhance with additional features like logging or a graphical UI in future iterations.
