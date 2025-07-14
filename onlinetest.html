@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Test Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hidden { display: none; }
+        .timer { font-family: monospace; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 p-4">
+    <div class="container mx-auto" id="app">
+        <!-- Home Module -->
+        <div id="home-module" class="text-center">
+            <div class="bg-blue-500 text-white p-6 rounded mb-6">
+                <h1 class="text-2xl font-bold mb-2">Online Test Application</h1>
+                <p class="text-lg">Test your knowledge with our quiz system</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded border">
+                    <h3 class="text-lg font-semibold mb-2">Take Quiz</h3>
+                    <p class="text-gray-600 mb-3">Start the JavaScript fundamentals test</p>
+                    <button id="start-quiz-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Start Quiz
+                    </button>
+                </div>
+                
+                <div class="bg-white p-4 rounded border">
+                    <h3 class="text-lg font-semibold mb-2">Review</h3>
+                    <p class="text-gray-600 mb-3">Review your answers and correct solutions</p>
+                    <button id="review-btn" class="px-4 py-2 rounded bg-gray-400 text-white cursor-not-allowed" disabled>
+                        Review Answers
+                    </button>
+                </div>
+                
+                <div class="bg-white p-4 rounded border">
+                    <h3 class="text-lg font-semibold mb-2">Results</h3>
+                    <p class="text-gray-600 mb-3">View your test results and performance</p>
+                    <button id="results-btn" class="px-4 py-2 rounded bg-gray-400 text-white cursor-not-allowed" disabled>
+                        View Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Module -->
+        <div id="quiz-module" class="hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded border p-4 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">JavaScript Fundamentals Test</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center text-red-600">
+                            <span class="mr-1">⏰</span>
+                            <span id="timer" class="timer">30:00</span>
+                        </div>
+                        <div class="text-gray-600">
+                            Question <span id="current-question">1</span> of <span id="total-questions">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 id="question-text" class="text-lg font-medium mb-3"></h3>
+                    <div id="options-container" class="space-y-2">
+                        <!-- Options will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <button id="prev-btn" class="px-3 py-1 rounded bg-gray-300 text-gray-500 cursor-not-allowed" disabled>
+                        Previous
+                    </button>
+                    
+                    <div id="question-nav" class="flex space-x-1">
+                        <!-- Question navigation will be populated by JavaScript -->
+                    </div>
+                    
+                    <button id="next-btn" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Module -->
+        <div id="review-module" class="hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded border p-4 mb-4">
+                <h2 class="text-xl font-bold mb-4">Quiz Review</h2>
+                
+                <div id="review-container" class="space-y-4">
+                    <!-- Review content will be populated by JavaScript -->
+                </div>
+                
+                <div class="mt-4 flex justify-center space-x-3">
+                    <button id="back-home-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Back to Home
+                    </button>
+                    <button id="view-results-btn" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                        View Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Module -->
+        <div id="results-module" class="hidden max-w-xl mx-auto">
+            <div class="bg-white rounded border p-6">
+                <h2 class="text-2xl font-bold text-center mb-6">Quiz Results</h2>
+                
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <div id="percentage-display" class="inline-block px-6 py-3 rounded text-3xl font-bold">
+                            <!-- Percentage will be populated by JavaScript -->
+                        </div>
+                        <p id="grade-display" class="text-lg text-gray-600 mt-2">
+                            <!-- Grade will be populated by JavaScript -->
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-3 rounded text-center">
+                            <p id="total-q" class="text-xl font-bold text-blue-600">0</p>
+                            <p class="text-sm text-blue-600">Total Questions</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-3 rounded text-center">
+                            <p id="correct-ans" class="text-xl font-bold text-green-600">0</p>
+                            <p class="text-sm text-green-600">Correct</p>
+                        </div>
+                        
+                        <div class="bg-red-50 p-3 rounded text-center">
+                            <p id="wrong-ans" class="text-xl font-bold text-red-600">0</p>
+                            <p class="text-sm text-red-600">Wrong</p>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-3 rounded text-center">
+                            <p id="points-earned" class="text-xl font-bold text-purple-600">0/0</p>
+                            <p class="text-sm text-purple-600">Points</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center space-x-3 mt-6">
+                        <button id="review-from-results-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                            Review Answers
+                        </button>
+                        <button id="take-again-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Take Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentModule = 'home';
+        let currentQuestion = 0;
+        let timeLeft = 1800; // 30 minutes
+        let timerInterval = null;
+        let quizStarted = false;
+        let quizCompleted = false;
+        let userAnswers = {};
+        let results = null;
+
+        // Sample Quiz Data
+        const quizData = {
+            title: "JavaScript Fundamentals Test",
+            timeLimit: 1800,
+            questions: [
+                {
+                    id: 1,
+                    question: "What is the correct way to declare a variable in JavaScript?",
+                    options: [
+                        "var myVariable;",
+                        "variable myVariable;",
+                        "v myVariable;",
+                        "declare myVariable;"
+                    ],
+                    points: 10
+                },
+                {
+                    id: 2,
+                    question: "Which of the following is NOT a JavaScript data type?",
+                    options: [
+                        "String",
+                        "Boolean",
+                        "Float",
+                        "Number"
+                    ],
+                    points: 10
+                },
+                {
+                    id: 3,
+                    question: "What does '===' operator do in JavaScript?",
+                    options: [
+                        "Checks for equality without type conversion",
+                        "Checks for equality with type conversion",
+                        "Assigns a value",
+                        "Compares references"
+                    ],
+                    points: 15
+                },
+                {
+                    id: 4,
+                    question: "Which method is used to add an element to the end of an array?",
+                    options: [
+                        "push()",
+                        "pop()",
+                        "shift()",
+                        "unshift()"
+                    ],
+                    points: 10
+                },
+                {
+                    id: 5,
+                    question: "What will 'typeof null' return in JavaScript?",
+                    options: [
+                        "null",
+                        "undefined",
+                        "object",
+                        "number"
+                    ],
+                    points: 15
+                }
+            ]
+        };
+
+        // Correct Answers
+        const correctAnswers = {
+            1: 0,
+            2: 2,
+            3: 0,
+            4: 0,
+            5: 2
+        };
+
+        // DOM Elements
+        const modules = {
+            home: document.getElementById('home-module'),
+            quiz: document.getElementById('quiz-module'),
+            review: document.getElementById('review-module'),
+            results: document.getElementById('results-module')
+        };
+
+        // Utility Functions
+        function showModule(moduleName) {
+            Object.values(modules).forEach(module => module.classList.add('hidden'));
+            modules[moduleName].classList.remove('hidden');
+            currentModule = moduleName;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = formatTime(timeLeft);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // Quiz Functions
+        function startQuiz() {
+            currentQuestion = 0;
+            userAnswers = {};
+            timeLeft = quizData.timeLimit;
+            quizStarted = true;
+            quizCompleted = false;
+            results = null;
+            
+            showModule('quiz');
+            renderQuestion();
+            startTimer();
+        }
+
+        function renderQuestion() {
+            const question = quizData.questions[currentQuestion];
+            
+            document.getElementById('question-text').textContent = question.question;
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('total-questions').textContent = quizData.questions.length;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center p-2 border rounded hover:bg-gray-50 cursor-pointer';
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `question-${question.id}`;
+                input.value = index;
+                input.className = 'mr-3';
+                input.checked = userAnswers[question.id] === index;
+                
+                input.addEventListener('change', () => {
+                    userAnswers[question.id] = index;
+                    updateQuestionNavigation();
+                });
+                
+                const span = document.createElement('span');
+                span.textContent = option;
+                
+                label.appendChild(input);
+                label.appendChild(span);
+                optionsContainer.appendChild(label);
+            });
+            
+            updateNavigation();
+            updateQuestionNavigation();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            prevBtn.className = currentQuestion === 0 
+                ? 'px-3 py-1 rounded bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'px-3 py-1 rounded bg-gray-500 text-white hover:bg-gray-600';
+            
+            if (currentQuestion === quizData.questions.length - 1) {
+                nextBtn.textContent = 'Submit Quiz';
+                nextBtn.className = 'px-4 py-1 bg-green-500 text-white rounded hover:bg-green-600';
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.className = 'px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600';
+            }
+        }
+
+        function updateQuestionNavigation() {
+            const navContainer = document.getElementById('question-nav');
+            navContainer.innerHTML = '';
+            
+            quizData.questions.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.textContent = index + 1;
+                button.className = `w-6 h-6 rounded text-xs ${
+                    index === currentQuestion
+                        ? 'bg-blue-500 text-white'
+                        : userAnswers[quizData.questions[index].id] !== undefined
+                        ? 'bg-green-200 text-green-800'
+                        : 'bg-gray-200 text-gray-600'
+                }`;
+                
+                button.addEventListener('click', () => {
+                    currentQuestion = index;
+                    renderQuestion();
+                });
+                
+                navContainer.appendChild(button);
+            });
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            stopTimer();
+            quizCompleted = true;
+            calculateResults();
+            enableButtons();
+            showModule('results');
+        }
+
+        function calculateResults() {
+            let correctCount = 0;
+            let totalPoints = 0;
+            let earnedPoints = 0;
+
+            quizData.questions.forEach(question => {
+                totalPoints += question.points;
+                const userAnswer = userAnswers[question.id];
+                const correctAnswer = correctAnswers[question.id];
+                
+                if (userAnswer === correctAnswer) {
+                    correctCount++;
+                    earnedPoints += question.points;
+                }
+            });
+
+            const percentage = ((earnedPoints / totalPoints) * 100).toFixed(1);
+            const grade = percentage >= 80 ? 'A' : percentage >= 70 ? 'B' : percentage >= 60 ? 'C' : percentage >= 50 ? 'D' : 'F';
+
+            results = {
+                totalQuestions: quizData.questions.length,
+                correctAnswers: correctCount,
+                wrongAnswers: quizData.questions.length - correctCount,
+                totalPoints: totalPoints,
+                earnedPoints: earnedPoints,
+                percentage: percentage,
+                grade: grade
+            };
+
+            renderResults();
+        }
+
+        function renderResults() {
+            const percentageDisplay = document.getElementById('percentage-display');
+            const gradeDisplay = document.getElementById('grade-display');
+            
+            percentageDisplay.textContent = results.percentage + '%';
+            percentageDisplay.className = `inline-block px-6 py-3 rounded text-3xl font-bold ${
+                results.percentage >= 70 ? 'bg-green-100 text-green-600' : 
+                results.percentage >= 50 ? 'bg-yellow-100 text-yellow-600' : 
+                'bg-red-100 text-red-600'
+            }`;
+            
+            gradeDisplay.textContent = `Grade: ${results.grade}`;
+            
+            document.getElementById('total-q').textContent = results.totalQuestions;
+            document.getElementById('correct-ans').textContent = results.correctAnswers;
+            document.getElementById('wrong-ans').textContent = results.wrongAnswers;
+            document.getElementById('points-earned').textContent = `${results.earnedPoints}/${results.totalPoints}`;
+        }
+
+        function renderReview() {
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            
+            quizData.questions.forEach((question, index) => {
+                const userAnswer = userAnswers[question.id];
+                const correctAnswer = correctAnswers[question.id];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'border rounded p-3';
+                
+                const questionHeader = document.createElement('div');
+                questionHeader.className = 'flex items-start justify-between mb-2';
+                
+                const questionTitle = document.createElement('h3');
+                questionTitle.className = 'font-medium';
+                questionTitle.textContent = `${index + 1}. ${question.question}`;
+                
+                const statusIcon = document.createElement('div');
+                statusIcon.className = 'flex items-center';
+                statusIcon.innerHTML = isCorrect ? 
+                    '<span class="text-green-600">✓</span>' : 
+                    '<span class="text-red-600">✗</span>';
+                
+                questionHeader.appendChild(questionTitle);
+                questionHeader.appendChild(statusIcon);
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'space-y-1';
+                
+                question.options.forEach((option, optionIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = `p-2 rounded text-sm ${
+                        optionIndex === correctAnswer
+                            ? 'bg-green-100 border border-green-300'
+                            : optionIndex === userAnswer && !isCorrect
+                            ? 'bg-red-100 border border-red-300'
+                            : 'bg-gray-50'
+                    }`;
+                    
+                    const optionContent = document.createElement('div');
+                    optionContent.className = 'flex items-center';
+                    
+                    const symbol = document.createElement('span');
+                    symbol.className = 'font-medium mr-2';
+                    symbol.textContent = optionIndex === correctAnswer ? '✓' : 
+                                         optionIndex === userAnswer ? '✗' : '○';
+                    
+                    const text = document.createElement('span');
+                    text.textContent = option;
+                    
+                    optionContent.appendChild(symbol);
+                    optionContent.appendChild(text);
+                    optionDiv.appendChild(optionContent);
+                    optionsDiv.appendChild(optionDiv);
+                });
+                
+                const pointsDiv = document.createElement('div');
+                pointsDiv.className = 'mt-2 text-sm text-gray-600';
+                pointsDiv.textContent = `Points: ${isCorrect ? question.points : 0}/${question.points}`;
+                
+                questionDiv.appendChild(questionHeader);
+                questionDiv.appendChild(optionsDiv);
+                questionDiv.appendChild(pointsDiv);
+                reviewContainer.appendChild(questionDiv);
+            });
+        }
+
+        function enableButtons() {
+            const reviewBtn = document.getElementById('review-btn');
+            const resultsBtn = document.getElementById('results-btn');
+            
+            if (quizCompleted) {
+                reviewBtn.disabled = false;
+                reviewBtn.className = 'px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600';
+            }
+            
+            if (results) {
+                resultsBtn.disabled = false;
+                resultsBtn.className = 'px-4 py-2 rounded bg-purple-500 text-white hover:bg-purple-600';
+            }
+        }
+
+        function resetQuiz() {
+            stopTimer();
+            currentQuestion = 0;
+            userAnswers = {};
+            timeLeft = 1800;
+            quizStarted = false;
+            quizCompleted = false;
+            results = null;
+            
+            // Reset buttons
+            document.getElementById('review-btn').disabled = true;
+            document.getElementById('review-btn').className = 'px-4 py-2 rounded bg-gray-400 text-white cursor-not-allowed';
+            document.getElementById('results-btn').disabled = true;
+            document.getElementById('results-btn').className = 'px-4 py-2 rounded bg-gray-400 text-white cursor-not-allowed';
+            
+            showModule('home');
+        }
+
+        // Event Listeners
+        document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+        document.getElementById('next-btn').addEventListener('click', nextQuestion);
+        document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+        document.getElementById('review-btn').addEventListener('click', () => {
+            renderReview();
+            showModule('review');
+        });
+        document.getElementById('results-btn').addEventListener('click', () => showModule('results'));
+        document.getElementById('back-home-btn').addEventListener('click', () => showModule('home'));
+        document.getElementById('view-results-btn').addEventListener('click', () => showModule('results'));
+        document.getElementById('review-from-results-btn').addEventListener('click', () => {
+            renderReview();
+            showModule('review');
+        });
+        document.getElementById('take-again-btn').addEventListener('click', resetQuiz);
+
+        // Initialize
+        showModule('home');
+    </script>
+</body>
+</html>
